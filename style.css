@@ -254,7 +254,84 @@ h1 span {
 }
 
 .note-page {
+  display: grid;
+  grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+  align-items: start;
+  gap: 48px;
+  min-height: 430px;
   padding: 60px 0 90px;
+  animation: fade-in-up 450ms ease-out both;
+}
+
+.note-sidebar {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding-right: 14px;
+}
+
+.note-sidebar h2 {
+  margin-bottom: 14px;
+  font-size: 19px;
+}
+
+.note-tree,
+.note-tree ul {
+  margin: 0;
+  padding-left: 14px;
+  list-style: none;
+}
+
+.note-tree {
+  padding-left: 0;
+}
+
+.note-tree ul {
+  margin-left: 4px;
+  border-left: 1px solid var(--line);
+}
+
+.note-tree li {
+  min-width: 0;
+  margin: 3px 0;
+}
+
+.note-tree details > summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.note-tree a,
+.note-tree summary {
+  display: block;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.note-tree a:hover,
+.note-tree a[aria-current="page"] {
+  background: var(--blue-light);
+  color: #315f8e;
+}
+
+.note-tree a[aria-current="page"] {
+  font-weight: 700;
+}
+
+.note-content {
+  min-width: 0;
+}
+
+.note-index-content h1 {
+  font-size: clamp(36px, 7vw, 58px);
+}
+
+.note-index-content .note-index {
+  margin-top: 32px;
 }
 
 .note-toolbar {
@@ -389,6 +466,20 @@ footer p {
 
   footer {
     gap: 16px;
+  }
+}
+
+@media (max-width: 700px) {
+  .note-page {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .note-sidebar {
+    position: static;
+    max-height: 260px;
+    padding: 0 0 16px;
+    border-bottom: 1px solid var(--line);
   }
 }
 

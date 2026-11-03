@@ -13,8 +13,8 @@ share my projects, work, and interests.
 - `style.css` contains the page and notes styles.
 - `assets/images/profile_pic.png` is the profile image shown on the About page.
 - `notes/index.html` is the cybersecurity notes index.
-- `_layouts/` contains the shared layout used to render notes from the `notes`
-  repository.
+- `_layouts/` and `_includes/` contain the shared page layout and recursive
+  notes navigation tree.
 
 To change the profile picture, replace `assets/images/profile_pic.png` with
 another image using the same filename. The image is cropped to fit a responsive
@@ -23,8 +23,11 @@ square frame without stretching.
 The About, Projects, and Contact pages use plain HTML and CSS. GitHub Actions
 fetches Markdown and image files from
 [h1m1208/notes](https://github.com/h1m1208/notes) and builds the notes pages
-with Jekyll. The directory structure is preserved under `/notes/`, so for
-example `pentesting/active_directory/active_directory.md` is published at
+with Jekyll. The directory structure is preserved under `/notes/`, with a
+clickable tree beside the notes and the site's header and footer on every
+page. The source repository's top-level `README.md` is excluded so it doesn't
+replace the notes index. For example,
+`pentesting/active_directory/active_directory.md` is published at
 `/notes/pentesting/active_directory/active_directory/`.
 
 The workflow runs when this repository's `main` branch changes, once daily to

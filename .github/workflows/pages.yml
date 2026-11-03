@@ -37,12 +37,43 @@ jobs:
       - name: Stage Markdown notes
         run: |
           mkdir -p _notes
-          rsync -a --exclude='.git/' --include='*/' --include='*.md' --exclude='*' notes-source/ _notes/
+          rsync -a --exclude='.git/' --exclude='/README.md' --include='*/' --include='*.md' --exclude='*' notes-source/ _notes/
 
       - name: Stage note assets
         run: |
           mkdir -p notes
           rsync -a --exclude='.git/' --exclude='*.md' notes-source/ notes/
+
+      - name: Build notes navigation tree
+        run: |
+          mkdir -p _data
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = {"folders": {}, "notes": []}
+          for path in sorted(Path("_notes").rglob("*.md")):
+              relative = path.relative_to("_notes")
+              if relative.as_posix() == "README.md":
+                  continue
+
+              folder = root
+              for part in relative.parts[:-1]:
+                  folder = folder["folders"].setdefault(part, {"folders": {}, "notes": []})
+
+              title = relative.stem.replace("_", " ").replace("-", " ").title()
+              url = "/notes/" + relative.with_suffix("").as_posix() + "/"
+              folder["notes"].append({"title": title, "url": url})
+
+          def nodes(folder):
+              result = []
+              for name, child in sorted(folder["folders"].items()):
+                  result.append({"title": name.replace("_", " ").replace("-", " ").title(), "children": nodes(child)})
+              result.extend(sorted(folder["notes"], key=lambda note: note["title"].lower()))
+              return result
+
+          Path("_data/notes_tree.json").write_text(json.dumps(nodes(root), indent=2) + "\n")
+          PY
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

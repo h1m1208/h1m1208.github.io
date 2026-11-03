@@ -3,8 +3,12 @@ layout: default
 title: Cybersecurity Notes
 description: Study notes and writeups by h1m_1208.
 ---
-<main>
-  <section class="page-content">
+<main class="note-page">
+  <aside class="note-sidebar" aria-label="Notes navigation">
+    <h2>Study notes</h2>
+    <ul class="note-tree">{% include note-tree.html nodes=site.data.notes_tree %}</ul>
+  </aside>
+  <section class="note-content note-index-content">
     <p class="eyebrow">CYBERSECURITY NOTES</p>
     <h1>Study notes &amp; writeups</h1>
     <p class="intro-text">Notes are kept in the <a href="https://github.com/h1m1208/notes">notes repository</a> and published here with their original folder structure.</p>
