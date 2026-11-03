@@ -25,10 +25,14 @@ fetches Markdown and image files from
 [h1m1208/notes](https://github.com/h1m1208/notes) and builds the notes pages
 with Jekyll. The directory structure is preserved under `/notes/`, with a
 clickable tree beside the notes and the site's header and footer on every
-page. The source repository's top-level `README.md` is excluded so it doesn't
-replace the notes index. For example,
+page. The source repository's top-level `README.md` and `index.md` are excluded
+so they don't replace the notes index. The build adds Jekyll layout metadata
+to notes that don't have front matter, without changing the source repository,
+and checks that every note page and the notes index were generated. For example,
 `pentesting/active_directory/active_directory.md` is published at
-`/notes/pentesting/active_directory/active_directory/`.
+`/notes/pentesting/active_directory/active_directory.html`. Keeping each
+rendered page beside its source Markdown also preserves relative image paths
+in writeups.
 
 The workflow runs when this repository's `main` branch changes, once daily to
 pick up notes-repository updates, or when started manually from the Actions

@@ -37,12 +37,28 @@ jobs:
       - name: Stage Markdown notes
         run: |
           mkdir -p _notes
-          rsync -a --exclude='.git/' --exclude='/README.md' --include='*/' --include='*.md' --exclude='*' notes-source/ _notes/
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path("notes-source")
+          destination = Path("_notes")
+          for note in source.rglob("*.md"):
+              relative = note.relative_to(source)
+              if relative.as_posix() in ("README.md", "index.md"):
+                  continue
+
+              target = destination / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              content = note.read_text(encoding="utf-8")
+              if not content.startswith("---\n"):
+                  content = "---\nlayout: note\n---\n\n" + content
+              target.write_text(content, encoding="utf-8")
+          PY
 
       - name: Stage note assets
         run: |
           mkdir -p notes
-          rsync -a --exclude='.git/' --exclude='*.md' notes-source/ notes/
+          rsync -a --exclude='.git/' --exclude='*.md' --exclude='/index.html' notes-source/ notes/
 
       - name: Build notes navigation tree
         run: |
@@ -54,7 +70,7 @@ jobs:
           root = {"folders": {}, "notes": []}
           for path in sorted(Path("_notes").rglob("*.md")):
               relative = path.relative_to("_notes")
-              if relative.as_posix() == "README.md":
+              if relative.as_posix() in ("README.md", "index.md"):
                   continue
 
               folder = root
@@ -62,7 +78,7 @@ jobs:
                   folder = folder["folders"].setdefault(part, {"folders": {}, "notes": []})
 
               title = relative.stem.replace("_", " ").replace("-", " ").title()
-              url = "/notes/" + relative.with_suffix("").as_posix() + "/"
+              url = "/notes/" + relative.with_suffix(".html").as_posix()
               folder["notes"].append({"title": title, "url": url})
 
           def nodes(folder):
@@ -83,6 +99,66 @@ jobs:
         with:
           source: ./
           destination: ./_site
+
+      - name: Verify generated notes site
+        run: |
+          python3 - <<'PY'
+          import posixpath
+          import re
+          from pathlib import Path
+
+          output = Path("_site")
+          source = Path("_notes")
+          note_paths = sorted(source.rglob("*.md"))
+          if not note_paths:
+              raise SystemExit("No Markdown notes were staged for publishing.")
+
+          required = [output / "notes/index.html"]
+          required.extend(
+              output / "notes" / note.relative_to(source).with_suffix(".html")
+              for note in note_paths
+          )
+          missing = [str(path) for path in required if not path.is_file()]
+          if missing:
+              raise SystemExit("Missing expected Pages output:\n" + "\n".join(missing))
+
+          missing_assets = []
+          for note in note_paths:
+              relative = note.relative_to(source)
+              content = note.read_text(encoding="utf-8")
+              for target in re.findall(r"!\[[^]]*\]\(([^)]+)\)", content):
+                  target = target.strip()
+                  if target.startswith(("https://", "http://", "data:", "/", "#")):
+                      continue
+                  target_path = target.split("#", 1)[0].split("?", 1)[0]
+                  asset = output / posixpath.normpath(
+                      posixpath.join("notes", relative.parent.as_posix(), target_path)
+                  )
+                  if not asset.is_file():
+                      missing_assets.append(f"{relative}: {target} -> {asset}")
+          if missing_assets:
+              raise SystemExit("Missing relative note assets:\n" + "\n".join(missing_assets))
+
+          index = (output / "notes/index.html").read_text(encoding="utf-8")
+          if not all(
+              marker in index
+              for marker in ('class="site-header"', "Study notes &amp; writeups", "note-tree", "<footer>")
+          ):
+              raise SystemExit("The notes index is missing the site layout or navigation tree.")
+
+          sample_note = note_paths[0].relative_to(source).with_suffix(".html")
+          note_page = (output / "notes" / sample_note).read_text(encoding="utf-8")
+          if not all(
+              marker in note_page
+              for marker in (
+                  'class="site-header"',
+                  'aria-label="Notes navigation"',
+                  "CYBERSECURITY NOTES",
+                  "<footer>",
+              )
+          ):
+              raise SystemExit("A rendered note is missing the site layout or navigation tree.")
+          PY
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

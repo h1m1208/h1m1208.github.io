@@ -6,7 +6,7 @@ markdown: kramdown
 collections:
   notes:
     output: true
-    permalink: /notes/:path/
+    permalink: /notes/:path.html
 
 defaults:
   - scope:
