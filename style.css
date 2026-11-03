@@ -167,6 +167,27 @@ h1 span {
   color: var(--muted);
 }
 
+.intro-quote {
+  margin: 0 0 28px;
+  padding: 8px 0 8px 16px;
+  border-left: 3px solid var(--blue);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.intro-quote blockquote {
+  margin: 0;
+  font-style: italic;
+}
+
+.intro-quote blockquote p {
+  margin-bottom: 4px;
+}
+
+.intro-quote figcaption {
+  font-size: 12px;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
