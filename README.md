@@ -3,7 +3,7 @@
 This repository contains the source for my personal website: a simple place to
 share my projects, work, and interests.
 
-🌐 **Visit the site:** [h1m_1208.github.io](https://h1m_1208.github.io)
+🌐 **Visit the site:** [h1m_1208.github.io](https://h1m1208.github.io)
 
 ## Files
 
