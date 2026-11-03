@@ -39,6 +39,11 @@ jobs:
           mkdir -p _notes
           rsync -a --exclude='.git/' --include='*/' --include='*.md' --exclude='*' notes-source/ _notes/
 
+      - name: Stage note assets
+        run: |
+          mkdir -p notes
+          rsync -a --exclude='.git/' --exclude='*.md' notes-source/ notes/
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
@@ -47,11 +52,6 @@ jobs:
         with:
           source: ./
           destination: ./_site
-
-      - name: Copy note assets
-        run: |
-          mkdir -p _site/notes
-          rsync -a --exclude='.git/' --exclude='*.md' notes-source/ _site/notes/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
