@@ -3,13 +3,13 @@ layout: default
 ---
 <main class="note-page">
   <aside class="note-sidebar" aria-label="Notes navigation">
-    <h2>Study notes</h2>
+    <h2>Study Notes</h2>
     <ul class="note-tree">{% include note-tree.html nodes=site.data.notes_tree %}</ul>
   </aside>
   <article class="note-content">
-    <p class="eyebrow">CYBERSECURITY NOTES</p>
+    <p class="eyebrow">STUDY NOTES</p>
     <div class="note-toolbar">
-      <a href="{{ '/notes/' | relative_url }}">← All notes</a>
+      <a href="{{ '/study-notes/' | relative_url }}">← All notes</a>
       <span>{{ page.path | remove: '.md' | remove: '_notes/' | replace: '_', ' ' | replace: '/', ' / ' }}</span>
     </div>
     <div class="markdown-content">

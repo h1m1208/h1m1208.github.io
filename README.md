@@ -12,7 +12,7 @@ share my projects, work, and interests.
 - `contact.html` contains the contact page.
 - `style.css` contains the page and notes styles.
 - `assets/images/profile_pic.png` is the profile image shown on the About page.
-- `notes/index.html` is the cybersecurity notes index.
+- `study-notes/index.html` is the study notes index.
 - `_layouts/` and `_includes/` contain the shared page layout and recursive
   notes navigation tree.
 
@@ -23,14 +23,15 @@ square frame without stretching.
 The About, Projects, and Contact pages use plain HTML and CSS. GitHub Actions
 fetches Markdown and image files from
 [h1m1208/notes](https://github.com/h1m1208/notes) and builds the notes pages
-with Jekyll. The directory structure is preserved under `/notes/`, with a
-clickable tree beside the notes and the site's header and footer on every
-page. The source repository's top-level `README.md` and `index.md` are excluded
-so they don't replace the notes index. The build adds Jekyll layout metadata
-to notes that don't have front matter, without changing the source repository,
-and checks that every note page and the notes index were generated. For example,
+with Jekyll. The directory structure is preserved under `/study-notes/`, with
+a clickable tree beside the notes and the site's header and footer on every
+page. This distinct path avoids conflicts with GitHub's project-site routing.
+The source repository's top-level `README.md` and `index.md` are excluded so
+they don't replace the notes index. The build adds Jekyll layout metadata to
+notes that don't have front matter, without changing the source repository, and
+checks that every note page and the notes index were generated. For example,
 `pentesting/active_directory/active_directory.md` is published at
-`/notes/pentesting/active_directory/active_directory.html`. Keeping each
+`/study-notes/pentesting/active_directory/active_directory.html`. Keeping each
 rendered page beside its source Markdown also preserves relative image paths
 in writeups.
 

@@ -57,8 +57,8 @@ jobs:
 
       - name: Stage note assets
         run: |
-          mkdir -p notes
-          rsync -a --exclude='.git/' --exclude='*.md' --exclude='/index.html' notes-source/ notes/
+          mkdir -p study-notes
+          rsync -a --exclude='.git/' --exclude='*.md' --exclude='/index.html' notes-source/ study-notes/
 
       - name: Build notes navigation tree
         run: |
@@ -78,7 +78,7 @@ jobs:
                   folder = folder["folders"].setdefault(part, {"folders": {}, "notes": []})
 
               title = relative.stem.replace("_", " ").replace("-", " ").title()
-              url = "/notes/" + relative.with_suffix(".html").as_posix()
+              url = "/study-notes/" + relative.with_suffix(".html").as_posix()
               folder["notes"].append({"title": title, "url": url})
 
           def nodes(folder):
@@ -113,9 +113,9 @@ jobs:
           if not note_paths:
               raise SystemExit("No Markdown notes were staged for publishing.")
 
-          required = [output / "notes/index.html"]
+          required = [output / "study-notes/index.html"]
           required.extend(
-              output / "notes" / note.relative_to(source).with_suffix(".html")
+              output / "study-notes" / note.relative_to(source).with_suffix(".html")
               for note in note_paths
           )
           missing = [str(path) for path in required if not path.is_file()]
@@ -132,28 +132,28 @@ jobs:
                       continue
                   target_path = target.split("#", 1)[0].split("?", 1)[0]
                   asset = output / posixpath.normpath(
-                      posixpath.join("notes", relative.parent.as_posix(), target_path)
+                      posixpath.join("study-notes", relative.parent.as_posix(), target_path)
                   )
                   if not asset.is_file():
                       missing_assets.append(f"{relative}: {target} -> {asset}")
           if missing_assets:
               raise SystemExit("Missing relative note assets:\n" + "\n".join(missing_assets))
 
-          index = (output / "notes/index.html").read_text(encoding="utf-8")
+          index = (output / "study-notes/index.html").read_text(encoding="utf-8")
           if not all(
               marker in index
-              for marker in ('class="site-header"', "Study notes &amp; writeups", "note-tree", "<footer>")
+              for marker in ('class="site-header"', "Study Notes", "note-tree", "<footer>")
           ):
               raise SystemExit("The notes index is missing the site layout or navigation tree.")
 
           sample_note = note_paths[0].relative_to(source).with_suffix(".html")
-          note_page = (output / "notes" / sample_note).read_text(encoding="utf-8")
+          note_page = (output / "study-notes" / sample_note).read_text(encoding="utf-8")
           if not all(
               marker in note_page
               for marker in (
                   'class="site-header"',
                   'aria-label="Notes navigation"',
-                  "CYBERSECURITY NOTES",
+                  "STUDY NOTES",
                   "<footer>",
               )
           ):
