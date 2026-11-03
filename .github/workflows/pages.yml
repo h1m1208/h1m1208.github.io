@@ -1,0 +1,61 @@
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Check out notes
+        uses: actions/checkout@v4
+        with:
+          repository: h1m1208/notes
+          ref: main
+          path: notes-source
+
+      - name: Stage Markdown notes
+        run: |
+          mkdir -p _notes
+          rsync -a --exclude='.git/' --include='*/' --include='*.md' --exclude='*' notes-source/ _notes/
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build site with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - name: Copy note assets
+        run: |
+          mkdir -p _site/notes
+          rsync -a --exclude='.git/' --exclude='*.md' notes-source/ _site/notes/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

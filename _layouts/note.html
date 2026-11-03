@@ -1,0 +1,13 @@
+---
+layout: default
+---
+<main class="note-page">
+  <p class="eyebrow">CYBERSECURITY NOTES</p>
+  <div class="note-toolbar">
+    <a href="{{ '/notes/' | relative_url }}">← All notes</a>
+    <span>{{ page.path | remove: '.md' | remove: '_notes/' | replace: '_', ' ' | replace: '/', ' / ' }}</span>
+  </div>
+  <article class="markdown-content">
+    {{ content }}
+  </article>
+</main>

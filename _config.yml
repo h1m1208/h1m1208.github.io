@@ -1,0 +1,21 @@
+title: h1m_1208
+url: https://h1m1208.github.io
+baseurl: ""
+markdown: kramdown
+
+collections:
+  notes:
+    output: true
+    permalink: /notes/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: notes
+    values:
+      layout: note
+
+exclude:
+  - notes-source
+  - Gemfile
+  - Gemfile.lock
