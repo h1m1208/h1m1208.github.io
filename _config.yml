@@ -3,6 +3,9 @@ url: https://h1m1208.github.io
 baseurl: ""
 markdown: kramdown
 
+kramdown:
+  input: GFM
+
 collections:
   notes:
     output: true

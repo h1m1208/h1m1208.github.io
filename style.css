@@ -223,64 +223,127 @@ h1 span {
 }
 
 .project-list {
+  display: grid;
+  gap: 14px;
   margin-top: 40px;
-  border-top: 1px solid var(--line);
 }
 
 .project {
   display: block;
-  margin: 0 -12px;
-  padding: 22px 12px;
-  border-bottom: 1px solid var(--line);
+  margin: 0;
+  padding: 22px;
+  border: 1px solid var(--line);
   border-radius: 4px;
-  transition: background-color 160ms ease;
+  background: #fff;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-.project:hover {
+.project-link:hover,
+.project-link:focus-visible {
+  border-color: #b7d0e7;
   background: var(--blue-light);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.project-link:focus-visible,
+.note-index-item:focus-visible {
+  outline: 3px solid #9fc2e2;
+  outline-offset: 3px;
 }
 
 .project h2 {
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   font-size: 25px;
   letter-spacing: -0.5px;
 }
 
 .project p {
-  margin-bottom: 0;
+  margin-bottom: 14px;
   color: var(--muted);
 }
 
+.project-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid #c9dced;
+  border-radius: 4px;
+  background: #f5f9fd;
+  color: #315f8e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.project-action span {
+  transition: transform 160ms ease;
+}
+
+.project-link:hover .project-action span,
+.project-link:focus-visible .project-action span {
+  transform: translateX(3px);
+}
+
 .note-index {
-  margin-top: 40px;
-  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 36px;
 }
 
 .note-index-item {
-  display: block;
-  padding: 16px 12px;
-  border-bottom: 1px solid var(--line);
+  position: relative;
+  display: flex;
+  min-height: 92px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 42px 16px 18px;
+  border: 1px solid var(--line);
   border-radius: 4px;
+  background: #fff;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-.note-index-item:hover {
+.note-index-item::after {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  color: var(--blue);
+  content: "→";
+  transform: translateY(-50%);
+  transition: transform 160ms ease;
+}
+
+.note-index-item:hover,
+.note-index-item:focus-visible {
+  border-color: #b7d0e7;
   background: var(--blue-light);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.note-index-item:hover::after,
+.note-index-item:focus-visible::after {
+  transform: translate(3px, -50%);
 }
 
 .note-index-path {
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 5px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .note-page {
+  width: min(100% - 40px, 1080px);
   display: grid;
-  grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+  grid-template-columns: minmax(210px, 250px) minmax(0, 1fr);
   align-items: start;
-  gap: 48px;
+  gap: 56px;
   min-height: 430px;
-  padding: 60px 0 90px;
+  padding: 72px 0 100px;
   animation: fade-in-up 450ms ease-out both;
 }
 
@@ -352,7 +415,7 @@ h1 span {
 }
 
 .note-index-content .note-index {
-  margin-top: 32px;
+  margin-top: 36px;
 }
 
 .note-toolbar {
@@ -482,6 +545,7 @@ footer p {
   }
 
   .note-page {
+    width: min(100% - 32px, 1080px);
     padding: 48px 0 72px;
   }
 
@@ -493,7 +557,11 @@ footer p {
 @media (max-width: 700px) {
   .note-page {
     grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
+    gap: 36px;
+  }
+
+  .note-index {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .note-sidebar {
