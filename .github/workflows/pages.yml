@@ -38,7 +38,27 @@ jobs:
         run: |
           mkdir -p _notes
           python3 - <<'PY'
+          import re
+          from urllib.parse import urlsplit, urlunsplit
           from pathlib import Path
+
+          markdown_link = re.compile(r'(?<!!)(\[[^\]]*\]\(\s*)(<[^>\n]+>|[^\s)]+)([^)]*\))')
+
+          def rewrite_note_link(match):
+              prefix, wrapped_url, suffix = match.groups()
+              angle_brackets = wrapped_url.startswith("<") and wrapped_url.endswith(">")
+              url = wrapped_url[1:-1] if angle_brackets else wrapped_url
+              parts = urlsplit(url)
+              if parts.scheme or parts.netloc or parts.path.startswith("/") or not parts.path.lower().endswith(".md"):
+                  return match.group(0)
+
+              rewritten_path = parts.path[:-3] + ".html"
+              rewritten_url = urlunsplit(
+                  (parts.scheme, parts.netloc, rewritten_path, parts.query, parts.fragment)
+              )
+              if angle_brackets:
+                  rewritten_url = f"<{rewritten_url}>"
+              return f"{prefix}{rewritten_url}{suffix}"
 
           source = Path("notes-source")
           destination = Path("_notes")
@@ -50,6 +70,7 @@ jobs:
               target = destination / relative
               target.parent.mkdir(parents=True, exist_ok=True)
               content = note.read_text(encoding="utf-8")
+              content = markdown_link.sub(rewrite_note_link, content)
               if not content.startswith("---\n"):
                   content = "---\nlayout: note\n---\n\n" + content
               target.write_text(content, encoding="utf-8")
@@ -106,12 +127,31 @@ jobs:
           import posixpath
           import re
           from pathlib import Path
+          from urllib.parse import urlsplit
 
           output = Path("_site")
           source = Path("_notes")
           note_paths = sorted(source.rglob("*.md"))
           if not note_paths:
               raise SystemExit("No Markdown notes were staged for publishing.")
+
+          unrevised_links = []
+          markdown_link = re.compile(r'(?<!!)(\[[^\]]*\]\(\s*)(<[^>\n]+>|[^\s)]+)([^)]*\))')
+          for note in note_paths:
+              content = note.read_text(encoding="utf-8")
+              for match in markdown_link.finditer(content):
+                  wrapped_url = match.group(2)
+                  url = wrapped_url[1:-1] if wrapped_url.startswith("<") and wrapped_url.endswith(">") else wrapped_url
+                  parts = urlsplit(url)
+                  if (
+                      not parts.scheme
+                      and not parts.netloc
+                      and not parts.path.startswith("/")
+                      and parts.path.lower().endswith(".md")
+                  ):
+                      unrevised_links.append(f"{note.relative_to(source)}: {url}")
+          if unrevised_links:
+              raise SystemExit("Unrewritten relative Markdown links:\n" + "\n".join(unrevised_links))
 
           required = [output / "study-notes/index.html"]
           required.extend(
